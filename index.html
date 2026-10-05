@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#007dcb">
+    <meta name="description" content="Designer Essentials — catch the falling designer kit in your basket before the clock runs out.">
+    <title>Designer Essentials</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ballet&family=Sansita:wght@700;800;900&display=swap">
+
+    <link rel="preload" as="image" href="assets/img/sky.png">
+    <link rel="preload" as="image" href="assets/img/basket.png">
+    <!-- tokens.css is generated from tokens/tokens.json — see tokens/build.mjs -->
+    <link rel="stylesheet" href="assets/tokens.css">
+    <link rel="stylesheet" href="assets/game.css">
+</head>
+<body>
+    <div class="viewport">
+        <div class="stage" id="stage" role="application" aria-label="Designer Essentials catching game">
+
+            <div class="backdrop" aria-hidden="true">
+                <div class="backdrop__sky"></div>
+                <div class="backdrop__haze"></div>
+            </div>
+
+            <div class="field" id="field" aria-hidden="true"></div>
+
+            <img class="cloudbank" src="assets/img/cloud.png" alt="" width="558" height="314" aria-hidden="true">
+
+            <div class="player" id="player" aria-hidden="true">
+                <img class="player__art" src="assets/img/basket.png" alt="" width="83" height="70">
+            </div>
+
+            <!-- ── HUD ─────────────────────────────────────────────── -->
+            <header class="hud" id="hud" hidden>
+                <div class="hud__row">
+                    <div class="hud__group">
+                        <button class="iconbtn" id="btn-back" type="button" aria-label="Leave the round">
+                            <span class="iconbtn__glyph" aria-hidden="true">&larr;</span>
+                        </button>
+                        <p class="stat stat--score">
+                            <span class="stat__label">Score</span>
+                            <span class="stat__value" id="score">0</span>
+                        </p>
+                    </div>
+                    <button class="iconbtn" id="btn-sound" type="button" aria-pressed="true" aria-label="Sound on">
+                        <span class="iconbtn__glyph" aria-hidden="true">♪</span>
+                    </button>
+                </div>
+                <div class="timer">
+                    <div class="timer__track">
+                        <div class="timer__fill" id="timer-fill"></div>
+                    </div>
+                    <span class="timer__value" id="timer-value">60s</span>
+                </div>
+                <p class="combo" id="combo" hidden>Combo <span id="combo-value">×2</span></p>
+                <p class="boost" id="boost" hidden>Pinterest boost · double points</p>
+            </header>
+
+            <!-- ── START ───────────────────────────────────────────── -->
+            <section class="screen screen--start is-active" id="screen-start" aria-labelledby="lockup-title">
+                <div class="lockup">
+                    <h1 class="lockup__title" id="lockup-title">
+                        <span class="lockup__script" aria-hidden="true"><i>E</i>ssentials</span>
+                        <span class="lockup__word" aria-hidden="true">Designer</span>
+                        <span class="u-visually-hidden">Designer Essentials</span>
+                    </h1>
+                </div>
+
+                <div class="panel">
+                    <p class="panel__lede">Every designer&rsquo;s kit is falling out of the sky.<br>Fill the basket before the clock runs out.</p>
+
+                    <ul class="legend">
+                        <li class="legend__item">
+                            <img src="assets/img/coffee.png" alt="" width="26" height="34">
+                            <b class="legend__title">Coffee</b>
+                            <span class="legend__text">+3 sec</span>
+                        </li>
+                        <li class="legend__item">
+                            <img src="assets/img/money.png" alt="" width="38" height="34">
+                            <b class="legend__title">Cash</b>
+                            <span class="legend__text">+50 pts</span>
+                        </li>
+                        <li class="legend__item">
+                            <img src="assets/img/pinterest.png" alt="" width="34" height="34">
+                            <b class="legend__title">Pinterest</b>
+                            <span class="legend__text">2&times; for 6s</span>
+                        </li>
+                    </ul>
+
+                    <button class="btn btn--primary" id="btn-play" type="button">Start collecting</button>
+                    <p class="hint">Drag anywhere to move the basket &middot; or use <kbd>&larr;</kbd> <kbd>&rarr;</kbd></p>
+                </div>
+            </section>
+
+            <!-- ── GAME OVER ───────────────────────────────────────── -->
+            <section class="screen screen--over" id="screen-over" aria-labelledby="over-title">
+                <div class="card">
+                    <p class="card__eyebrow" id="over-eyebrow">Time&rsquo;s up</p>
+                    <h2 class="card__title" id="over-title">You collected</h2>
+                    <p class="card__score" id="final-score">0</p>
+                    <p class="card__gap" id="final-gap" hidden>0 short of your best</p>
+
+                    <dl class="tally">
+                        <div class="tally__cell">
+                            <dt>Items</dt><dd id="final-items">0</dd>
+                        </div>
+                        <div class="tally__cell">
+                            <dt>Best streak</dt><dd id="final-combo">0</dd>
+                        </div>
+                        <div class="tally__cell">
+                            <dt>Personal best</dt><dd id="final-best">0</dd>
+                        </div>
+                    </dl>
+
+                    <button class="btn btn--primary" id="btn-again" type="button">Play again</button>
+                    <button class="btn btn--ghost" id="btn-home" type="button">Back to start</button>
+                </div>
+            </section>
+
+            <p class="u-visually-hidden" id="announcer" role="status" aria-live="polite"></p>
+        </div>
+    </div>
+
+    <!-- game-config.js is generated from tokens/game.json — see tokens/build.mjs -->
+    <script src="assets/game-config.js"></script>
+    <script src="assets/game.js"></script>
+</body>
+</html>

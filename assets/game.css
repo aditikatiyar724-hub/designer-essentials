@@ -1,0 +1,738 @@
+/* ============================================================
+   Designer Essentials — web stylesheet
+   Design tokens live in tokens/tokens.json and are generated into
+   assets/tokens.css. Component rules below consume tier 2/3 only.
+   ============================================================ */
+
+
+/* ============================================================
+   Tier 3 · component tokens
+   Tiers 1 and 2 come from assets/tokens.css, generated from
+   tokens/tokens.json. These map them onto this platform's parts.
+   ============================================================ */
+
+:root {
+    --btn-primary-bg: var(--color-accent);
+    --btn-primary-bg-active: var(--color-accent-strong);
+    --btn-primary-fg: var(--primitive-white);
+    --btn-ghost-fg: var(--color-text-onsky);
+
+    --hud-bg: var(--surface-glass);
+    --hud-border: var(--surface-border-glass);
+}
+
+/* ============================================================
+   Reset & page frame
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-ui);
+    color: var(--color-text-onsky);
+    background:
+        radial-gradient(120% 80% at 50% 0%, var(--primitive-sky-700) 0%, var(--color-bg-page) 70%);
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Class-based `display` would otherwise beat the UA rule for [hidden] */
+[hidden] {
+    display: none !important;
+}
+
+.u-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.viewport {
+    position: fixed;
+    inset: 0;
+}
+
+/* Centred by transform rather than by layout: below 360px the unscaled
+   stage is wider than the viewport, and a grid track would overflow to
+   one side instead of staying centred. */
+.stage {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--stage-width);
+    height: var(--stage-height);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-stage);
+    box-shadow: var(--elevation-card);
+    transform: translate(-50%, -50%) scale(var(--scale, 1));
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+}
+
+.stage:active {
+    cursor: grabbing;
+}
+
+/* No rounded corners / shadow when the stage fills the screen */
+@media (max-width: 400px) {
+    .stage {
+        border-radius: 0;
+        box-shadow: none;
+    }
+}
+
+/* ============================================================
+   Backdrop
+   ============================================================ */
+
+.backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.backdrop__sky {
+    position: absolute;
+    inset: 0;
+    background: url("img/sky.png") center / cover no-repeat, var(--color-bg-stage);
+    transform: scale(1.02);
+}
+
+.backdrop__haze {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+        var(--surface-haze-top) 0%,
+        var(--surface-haze-fade) calc(var(--haze-height-pct) * 1%));
+}
+
+.cloudbank {
+    position: absolute;
+    left: var(--cloudbank-left);
+    top: var(--cloudbank-top);
+    width: var(--cloudbank-width);
+    height: var(--cloudbank-height);
+    z-index: 2;
+    pointer-events: none;
+    animation: drift 26s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+    from { transform: translate3d(-8px, 0, 0); }
+    to   { transform: translate3d(8px, 4px, 0); }
+}
+
+/* ============================================================
+   Field & falling items
+   ============================================================ */
+
+.field {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.item {
+    position: absolute;
+    left: 0;
+    top: 0;
+    filter: var(--elevation-sprite-drop);
+    will-change: transform;
+}
+
+.item--special {
+    filter: var(--elevation-sprite-drop) drop-shadow(0 0 12px rgba(255, 200, 87, 0.75));
+}
+
+/* ============================================================
+   Player basket
+   ============================================================ */
+
+.player {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    z-index: 4;
+    width: var(--player-width);
+    height: var(--player-height);
+    margin-left: calc(var(--player-width) / -2);
+    transform-origin: 50% 100%;
+    transform:
+        translate3d(0, calc(var(--player-hero-lift) * -1), 0)
+        scale(var(--player-hero-scale));
+    transition: transform var(--duration-slow) var(--easing-out);
+    pointer-events: none;
+}
+
+.player__art {
+    display: block;
+    width: var(--player-width);
+    height: var(--player-height);
+    filter: drop-shadow(0 10px 14px rgba(0, 45, 90, 0.3));
+}
+
+.player.is-catching .player__art {
+    animation: squash 260ms var(--easing-pop);
+}
+
+@keyframes squash {
+    0%   { transform: scale(1, 1); }
+    35%  { transform: scale(1.12, 0.86); }
+    100% { transform: scale(1, 1); }
+}
+
+/* ============================================================
+   HUD
+   ============================================================ */
+
+.hud {
+    position: absolute;
+    inset: var(--space-4) var(--space-4) auto;
+    z-index: 6;
+    display: grid;
+    gap: var(--space-2);
+    pointer-events: none;
+}
+
+.hud__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.hud__group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.stat {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    background: var(--hud-bg);
+    border: 1px solid var(--hud-border);
+    backdrop-filter: blur(8px);
+}
+
+.stat__label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.82;
+}
+
+.stat__value {
+    display: inline-block;
+    font-size: var(--text-lg);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 6px rgba(0, 40, 80, 0.4);
+}
+
+.stat__value.is-bumped {
+    animation: bump 320ms var(--easing-pop);
+}
+
+@keyframes bump {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.28); color: var(--color-highlight); }
+    100% { transform: scale(1); }
+}
+
+.iconbtn {
+    pointer-events: auto;
+    display: grid;
+    place-items: center;
+    width: var(--control-min-target);
+    height: var(--control-min-target);
+    padding: 0;
+    border: 1px solid var(--hud-border);
+    border-radius: var(--radius-pill);
+    background: var(--hud-bg);
+    color: var(--color-text-onsky);
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: background var(--duration-fast) ease, transform var(--duration-fast) ease;
+}
+
+.iconbtn:hover {
+    background: var(--surface-glass-strong);
+}
+
+.iconbtn:active {
+    transform: scale(0.94);
+}
+
+.iconbtn__glyph {
+    font-size: var(--text-lg);
+    line-height: 1;
+}
+
+.iconbtn[aria-pressed="false"] .iconbtn__glyph {
+    opacity: 0.4;
+    text-decoration: line-through;
+}
+
+.timer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.timer__track {
+    flex: 1;
+    height: 8px;
+    border-radius: var(--radius-pill);
+    background: var(--c-alpha-white-18);
+    border: 1px solid var(--hud-border);
+    overflow: hidden;
+}
+
+.timer__fill {
+    height: 100%;
+    width: 100%;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(90deg, var(--color-positive), var(--primitive-white));
+    transform-origin: left center;
+    transition: width 120ms linear, background var(--duration-med) ease;
+}
+
+.timer.is-low .timer__fill {
+    background: linear-gradient(90deg, var(--color-accent), var(--primitive-pink-200));
+}
+
+.timer.is-low .timer__value {
+    color: var(--primitive-pink-200);
+}
+
+.timer__value {
+    display: inline-block;
+    min-width: 40px;
+    text-align: right;
+    font-size: var(--text-sm);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 6px rgba(0, 40, 80, 0.4);
+}
+
+.timer__value.is-gained {
+    animation: bump 420ms var(--easing-pop);
+}
+
+.combo,
+.boost {
+    justify-self: start;
+    margin: 0;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--surface-glass-strong);
+    border: 1px solid var(--hud-border);
+    backdrop-filter: blur(8px);
+}
+
+.combo #combo-value {
+    color: var(--color-highlight);
+}
+
+.boost {
+    background: var(--color-accent);
+    border-color: transparent;
+    animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.62; }
+}
+
+/* ============================================================
+   Floating score popups
+   ============================================================ */
+
+.pop {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 5;
+    font-size: var(--text-md);
+    font-weight: 900;
+    color: var(--color-highlight);
+    text-shadow: 0 2px 8px rgba(0, 40, 80, 0.55);
+    pointer-events: none;
+    white-space: nowrap;
+    animation: rise 760ms var(--easing-out) forwards;
+}
+
+.pop--time { color: var(--color-positive); }
+.pop--miss { color: var(--primitive-pink-200); }
+
+@keyframes rise {
+    0%   { opacity: 0; transform: translate3d(var(--pop-x), var(--pop-y), 0) scale(0.7); }
+    18%  { opacity: 1; transform: translate3d(var(--pop-x), calc(var(--pop-y) - 10px), 0) scale(1.1); }
+    100% { opacity: 0; transform: translate3d(var(--pop-x), calc(var(--pop-y) - 54px), 0) scale(1); }
+}
+
+.flash {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    background: radial-gradient(60% 40% at 50% 86%, rgba(255, 255, 255, 0.5), transparent 70%);
+    opacity: 0;
+}
+
+.flash.is-on {
+    animation: flash 300ms ease-out;
+}
+
+@keyframes flash {
+    from { opacity: 0.9; }
+    to   { opacity: 0; }
+}
+
+/* ============================================================
+   Screens
+   ============================================================ */
+
+.screen {
+    position: absolute;
+    inset: 0;
+    z-index: 7;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-5) var(--space-5) var(--space-6);
+    opacity: 0;
+    visibility: hidden;
+    /* Visibility flips instantly on the way in (so the screen can take focus in
+       the next frame) and only after the fade on the way out. */
+    transition: opacity var(--duration-med) var(--easing-out), visibility 0s linear var(--duration-med);
+}
+
+.screen.is-active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity var(--duration-med) var(--easing-out), visibility 0s;
+}
+
+.screen--over {
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, var(--surface-scrim-top), var(--surface-scrim-bottom));
+    backdrop-filter: blur(9px) saturate(0.85);
+}
+
+/* ── Title lockup ─────────────────────────────────────────
+   The script face renders wider here than it measures in Figma, so the
+   word mark is anchored to the script's own box (the designed 125.5px /
+   44.4px offset) and the pair is centred, rather than pinned to absolute
+   frame coordinates that would push it off a 360px stage. */
+
+.lockup {
+    position: absolute;
+    left: 0;
+    top: var(--lockup-top);
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.lockup__title {
+    position: relative;
+    display: inline-block;
+    margin: 0;
+    font-weight: 400;
+}
+
+.lockup__script {
+    display: block;
+    font-family: var(--font-script);
+    font-size: var(--lockup-script-size);
+    line-height: 1;
+    letter-spacing: var(--lockup-script-tracking);
+    color: var(--color-text-script);
+    white-space: nowrap;
+    text-shadow: 0 6px 18px rgba(0, 40, 80, 0.3);
+}
+
+.lockup__script i {
+    font-style: normal;
+    font-size: var(--lockup-script-drop);
+}
+
+.lockup__word {
+    position: absolute;
+    left: var(--lockup-word-offset-x);
+    top: var(--lockup-word-offset-y);
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: var(--lockup-word-size);
+    line-height: 1.2;
+    color: var(--color-text-display);
+    white-space: nowrap;
+    text-shadow: 0 4px 14px rgba(0, 40, 80, 0.35);
+}
+
+/* ── Start panel ─────────────────────────────────────────
+   Pinned above the hero basket so the designed bottom-of-frame
+   composition stays visible. */
+
+.panel {
+    position: absolute;
+    left: var(--space-5);
+    right: var(--space-5);
+    bottom: var(--panel-bottom);
+    display: grid;
+    gap: var(--space-3);
+    text-align: center;
+}
+
+.panel__lede {
+    margin: 0;
+    font-size: var(--text-md);
+    line-height: 1.45;
+    text-shadow: 0 2px 10px rgba(0, 40, 80, 0.45);
+}
+
+.legend {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+    margin: 0;
+    padding: var(--space-3) var(--space-2);
+    list-style: none;
+    border-radius: var(--radius-md);
+    background: var(--surface-glass);
+    border: 1px solid var(--surface-border-glass);
+    backdrop-filter: blur(8px);
+}
+
+.legend__item {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+}
+
+/* Each legend icon carries its own width/height attributes: the three
+   sprites have different aspect ratios, so one shared size would squash them. */
+.legend__item img {
+    display: block;
+    filter: var(--elevation-sprite-drop);
+}
+
+.legend__title {
+    font-size: var(--text-xs);
+    font-weight: 900;
+}
+
+.legend__text {
+    font-size: var(--text-xs);
+    line-height: 1.2;
+    opacity: 0.88;
+}
+
+.hint {
+    margin: 0;
+    font-size: var(--text-xs);
+    opacity: 0.85;
+}
+
+.hint kbd {
+    display: inline-block;
+    min-width: 20px;
+    padding: 1px var(--space-1);
+    border-radius: var(--radius-sm);
+    background: var(--surface-glass-strong);
+    font: inherit;
+}
+
+/* ── Game-over card ──────────────────────────────────────── */
+
+.card {
+    width: 100%;
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-5);
+    border-radius: var(--radius-lg);
+    background: var(--surface-card);
+    color: var(--color-text-ink);
+    box-shadow: var(--elevation-card);
+    text-align: center;
+    animation: cardIn var(--duration-slow) var(--easing-pop);
+}
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translate3d(0, 24px, 0) scale(0.94); }
+    to   { opacity: 1; transform: none; }
+}
+
+.card__eyebrow {
+    margin: 0;
+    font-size: var(--text-xs);
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+}
+
+.card__eyebrow.is-best {
+    color: var(--color-accent);
+}
+
+.card__title {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-text-muted);
+}
+
+.card__score {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--color-accent);
+    font-variant-numeric: tabular-nums;
+}
+
+.card__gap {
+    margin: calc(var(--space-2) * -1) 0 0;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.tally {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+    margin: 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid rgba(7, 39, 68, 0.12);
+}
+
+.tally__cell dt {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.tally__cell dd {
+    margin: var(--space-1) 0 0;
+    font-size: var(--text-md);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+
+.btn {
+    min-height: var(--control-btn-min-height);
+    padding: var(--space-3) var(--space-5);
+    border: 0;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-ui);
+    font-size: var(--text-md);
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: transform var(--duration-fast) var(--easing-pop), background var(--duration-fast) ease;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn--primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-fg);
+    box-shadow: var(--elevation-float);
+}
+
+.btn--primary:hover {
+    background: var(--btn-primary-bg-active);
+}
+
+.btn--ghost {
+    background: transparent;
+    color: var(--color-text-muted);
+    box-shadow: none;
+}
+
+.screen--start .btn--ghost {
+    color: var(--btn-ghost-fg);
+}
+
+:focus-visible {
+    outline: 3px solid var(--primitive-white);
+    outline-offset: 3px;
+}
+
+/* ============================================================
+   Play state
+   ============================================================ */
+
+.stage.is-playing .player {
+    transition: none;
+}
+
+/* Dimmed in play so the basket rim and the item meeting it stay legible */
+.stage.is-playing .cloudbank {
+    opacity: 0.6;
+}
+
+/* ============================================================
+   Motion preferences
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .cloudbank,
+    .boost {
+        animation: none;
+    }
+
+    .card {
+        animation-duration: 1ms;
+    }
+
+    .player {
+        transition-duration: 1ms;
+    }
+
+    .pop {
+        animation-duration: 420ms;
+    }
+}
